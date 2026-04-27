@@ -13,11 +13,11 @@ export default async function handler(req, res) {
         const command = statusText.trim().toLowerCase();
 
         if (command === 'yes') {
-            text = "System Status: ONLINE &amp; FREE";
+            text = "System Status: ONLINE &amp; FREE📑";
             textColor = "#00BFFF";
             borderColor = "#00599C";
         } else if (command === 'no') {
-            text = "System Status: BUSY // DO NOT DISTURB";
+            text = "System Status: BUSY ⛔";
             textColor = "#D14836";
             borderColor = "#8B0000";
         } else {
