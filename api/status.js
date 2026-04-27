@@ -3,7 +3,6 @@
 export default async function handler(req, res) {
     const gistUrl = "https://gist.githubusercontent.com/glzzjhn-byte/e984e5ecad79ae1d389924d8a9b19851/raw/status";
     
-    // Default fallback state
     let text = "System Status: UNAVAILABLE 🚫";
     let textColor = "#A9A9A9"; 
     let borderColor = "#696969";
@@ -13,7 +12,6 @@ export default async function handler(req, res) {
         const statusText = await response.text();
         const command = statusText.trim().toLowerCase();
 
-        // Helper function to calculate exact live time for a specific timezone
         const getTime = (tz) => new Date().toLocaleTimeString('en-US', { 
             timeZone: tz, 
             hour: '2-digit', 
@@ -21,7 +19,6 @@ export default async function handler(req, res) {
             hour12: true 
         });
 
-        // The Ciel Command Router
         if (command === 'yes') {
             text = "System Status: ONLINE &amp; FREE";
             textColor = "#00BFFF";
@@ -32,27 +29,23 @@ export default async function handler(req, res) {
             borderColor = "#8B0000";
         } else if (command === 'ph') {
             text = `Location: PH // Local Time: ${getTime('Asia/Manila')}`;
-            textColor = "#00E676"; // System Green
+            textColor = "#00E676";
             borderColor = "#00C853";
         } else if (command === 'kr' || command === 'korea') {
             text = `Location: KR // Local Time: ${getTime('Asia/Seoul')}`;
-            textColor = "#B388FF"; // Neon Purple
+            textColor = "#B388FF"; 
             borderColor = "#7C4DFF";
         } else if (command === 'sg') {
             text = `Location: SG // Local Time: ${getTime('Asia/Singapore')}`;
-            textColor = "#FFD54F"; // Alert Yellow
+            textColor = "#FFD54F"; 
             borderColor = "#FFCA28";
         } else {
-            // Secret Feature: Custom String Passthrough!
-            // If you type anything else (e.g. "Coding NexusPOS"), it displays it directly.
-            // We sanitize the text to prevent XML characters from breaking the SVG.
             const safeText = statusText.trim().substring(0, 35).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             text = `Status: ${safeText}`;
             textColor = "#00BFFF";
             borderColor = "#00599C";
         }
     } catch (error) {
-        // If fetch fails, defaults remain active
     }
 
     const svg = `<svg width="400" height="40" xmlns="http://www.w3.org/2000/svg">
