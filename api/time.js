@@ -15,15 +15,15 @@ export default function handler(req, res) {
     let borderColor = "#696969";
 
     if (!loc || loc.toLowerCase() === 'ph') {
-        text = `PH Standard Time: ${getTime('Asia/Manila')}`🕛;
+        text = `PH Standard Time: ${getTime('Asia/Manila')}🕛`;
         textColor = "#00E676"; 
         borderColor = "#00C853";
     } else if (loc.toLowerCase() === 'kr') {
-        text = `KR Standard Time: ${getTime('Asia/Seoul')}`🕛;
+        text = `KR Standard Time: ${getTime('Asia/Seoul')}🕛`;
         textColor = "#B388FF"; 
         borderColor = "#7C4DFF";
     } else if (loc.toLowerCase() === 'sg') {
-        text = `SG Standard Time: ${getTime('Asia/Singapore')}`🕛;
+        text = `SG Standard Time: ${getTime('Asia/Singapore')}🕛`;
         textColor = "#FFD54F"; 
         borderColor = "#FFCA28";
     }
