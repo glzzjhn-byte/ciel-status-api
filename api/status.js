@@ -12,13 +12,6 @@ export default async function handler(req, res) {
         const statusText = await response.text();
         const command = statusText.trim().toLowerCase();
 
-        const getTime = (tz) => new Date().toLocaleTimeString('en-US', { 
-            timeZone: tz, 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: true 
-        });
-
         if (command === 'yes') {
             text = "System Status: ONLINE &amp; FREE";
             textColor = "#00BFFF";
@@ -27,28 +20,18 @@ export default async function handler(req, res) {
             text = "System Status: BUSY // DO NOT DISTURB";
             textColor = "#D14836";
             borderColor = "#8B0000";
-        } else if (command === 'ph') {
-            text = `Location: PH // Local Time: ${getTime('Asia/Manila')}`;
-            textColor = "#00E676";
-            borderColor = "#00C853";
-        } else if (command === 'kr' || command === 'korea') {
-            text = `Location: KR // Local Time: ${getTime('Asia/Seoul')}`;
-            textColor = "#B388FF"; 
-            borderColor = "#7C4DFF";
-        } else if (command === 'sg') {
-            text = `Location: SG // Local Time: ${getTime('Asia/Singapore')}`;
-            textColor = "#FFD54F"; 
-            borderColor = "#FFCA28";
         } else {
+            // Custom text fallback
             const safeText = statusText.trim().substring(0, 35).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             text = `Status: ${safeText}`;
             textColor = "#00BFFF";
             borderColor = "#00599C";
         }
     } catch (error) {
+        // Fallback remains
     }
 
-    const svg = `<svg width="400" height="40" xmlns="http://www.w3.org/2000/svg">
+    const svg = `<svg width="350" height="40" xmlns="http://www.w3.org/2000/svg">
         <rect width="100%" height="100%" rx="4" fill="#0d1117" stroke="${borderColor}" stroke-width="2"/>
         <text x="50%" y="50%" font-family="monospace" font-size="14" fill="${textColor}" dominant-baseline="middle" text-anchor="middle" font-weight="bold" letter-spacing="1">
             ${text}
