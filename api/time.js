@@ -1,7 +1,6 @@
 // File: api/time.js
 
 export default function handler(req, res) {
-    // Grab the location from the URL query (e.g., ?loc=ph)
     const { loc } = req.query;
 
     const getTime = (tz) => new Date().toLocaleTimeString('en-US', { 
@@ -15,18 +14,17 @@ export default function handler(req, res) {
     let textColor = "#A9A9A9";
     let borderColor = "#696969";
 
-    // Route based on the URL parameter
     if (!loc || loc.toLowerCase() === 'ph') {
-        text = `PH Standard Time: ${getTime('Asia/Manila')}`;
-        textColor = "#00E676"; // Green
+        text = `PH Standard Time: ${getTime('Asia/Manila')}`🕛;
+        textColor = "#00E676"; 
         borderColor = "#00C853";
     } else if (loc.toLowerCase() === 'kr') {
-        text = `KR Standard Time: ${getTime('Asia/Seoul')}`;
-        textColor = "#B388FF"; // Purple
+        text = `KR Standard Time: ${getTime('Asia/Seoul')}`🕛;
+        textColor = "#B388FF"; 
         borderColor = "#7C4DFF";
     } else if (loc.toLowerCase() === 'sg') {
-        text = `SG Standard Time: ${getTime('Asia/Singapore')}`;
-        textColor = "#FFD54F"; // Yellow
+        text = `SG Standard Time: ${getTime('Asia/Singapore')}`🕛;
+        textColor = "#FFD54F"; 
         borderColor = "#FFCA28";
     }
 
