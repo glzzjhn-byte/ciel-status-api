@@ -3,7 +3,7 @@
 export default async function handler(req, res) {
     const gistUrl = "https://gist.githubusercontent.com/glzzjhn-byte/e984e5ecad79ae1d389924d8a9b19851/raw/status";
     
-    let text = "System Status: UNAVAILABLE 🚫";
+    let text = "Status: UNAVAILABLE 🚫";
     let textColor = "#A9A9A9"; 
     let borderColor = "#696969";
 
@@ -13,22 +13,22 @@ export default async function handler(req, res) {
         const command = statusText.trim().toLowerCase();
 
         if (command === 'yes') {
-            text = "System Status: ONLINE &amp; FREE📑";
+            text = "Status: ONLINE &amp; FREE📑";
             textColor = "#00BFFF";
             borderColor = "#00599C";
         } else if (command === 'no') {
-            text = "System Status: BUSY ⛔";
+            text = "Status: BUSY ⛔";
             textColor = "#D14836";
             borderColor = "#8B0000";
         } else {
-            // Custom text fallback
+            // text fallback
             const safeText = statusText.trim().substring(0, 35).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             text = `Status: ${safeText}`;
             textColor = "#00BFFF";
             borderColor = "#00599C";
         }
     } catch (error) {
-        // Fallback remains
+        // Fallback 
     }
 
     const svg = `<svg width="350" height="40" xmlns="http://www.w3.org/2000/svg">
