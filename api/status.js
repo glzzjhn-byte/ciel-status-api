@@ -20,15 +20,17 @@ export default async function handler(req, res) {
             text = "Status: BUSY ⛔";
             textColor = "#D14836";
             borderColor = "#8B0000";
+        } else if (command === '') {
+            text = "Status: UNAVAILABLE 🚫";
+            textColor = "#A9A9A9";
+            borderColor = "#696969";
         } else {
-            // text fallback
             const safeText = statusText.trim().substring(0, 35).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             text = `Status: ${safeText}`;
             textColor = "#00BFFF";
             borderColor = "#00599C";
         }
     } catch (error) {
-        // Fallback 
     }
 
     const svg = `<svg width="350" height="40" xmlns="http://www.w3.org/2000/svg">
