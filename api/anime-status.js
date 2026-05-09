@@ -145,7 +145,7 @@ export default async function handler(req) {
     return new Response(svg, {
       headers: {
         'Content-Type': 'image/svg+xml',
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=300',
+        'Cache-Control': 'max-age=0, s-maxage=300, stale-while-revalidate=300',
       },
     });
   } catch (err) {
