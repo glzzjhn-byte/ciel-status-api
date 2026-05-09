@@ -132,14 +132,14 @@ export default async function handler(req) {
       <rect width="800" height="46" y="4" fill="#141519"/>
       
       <text x="20" y="33" font-family="Arial,sans-serif" font-weight="800" font-size="15" fill="#F47521" letter-spacing="-0.3">CRUNCHYROLL</text>
-      <text x="145" y="33" font-family="Arial,sans-serif" font-weight="400" font-size="12" fill="#aaaaaa">— Advanced Watchlist Matrix</text>
-      <text x="20" y="55" font-family="Arial,sans-serif" font-weight="700" font-size="11" fill="#cccccc" letter-spacing="1">🎌 TOP 8 SYSTEM LOGS</text>
+      <text x="145" y="33" font-family="Arial,sans-serif" font-weight="400" font-size="12" fill="#aaaaaa">— Jay-John WatchList🙂</text>
+      <text x="20" y="55" font-family="Arial,sans-serif" font-weight="700" font-size="11" fill="#cccccc" letter-spacing="1">🎌 TOP 8 My AnimeList</text>
 
       ${cardsSvg}
 
       <rect y="${svgHeight - 22}" width="800" height="22" rx="0" fill="#0e0f13"/>
       <rect y="${svgHeight - 24}" width="800" height="1" fill="#2a2a35"/>
-      <text x="20" y="${svgHeight - 7}" font-family="Arial,sans-serif" font-size="9" fill="#888888">🎌 Syncing: Aggressive 5m Edge Cache | Real-time Status Data</text>
+      <text x="20" y="${svgHeight - 7}" font-family="Arial,sans-serif" font-size="9" fill="#888888">🎌 Syncing:every 5 min | Real-time Status Data</text>
     </svg>`;
 
     return new Response(svg, {
