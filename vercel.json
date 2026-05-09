@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/anime-status",
+      "destination": "/api/anime-status"
+    }
+  ]
+}
