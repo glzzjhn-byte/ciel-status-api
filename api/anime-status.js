@@ -1,5 +1,5 @@
 export const config = {
-  runtime: 'edge', // Using Edge for faster response times
+  runtime: 'edge', 
 };
 
 async function toBase64(url) {
@@ -7,7 +7,6 @@ async function toBase64(url) {
   try {
     const res = await fetch(url);
     const blob = await res.arrayBuffer();
-    // In Edge Runtime, we use btoa instead of Buffer
     const base64 = btoa(
       new Uint8Array(blob).reduce((data, byte) => data + String.fromCharCode(byte), '')
     );
