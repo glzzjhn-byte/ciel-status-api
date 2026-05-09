@@ -1,14 +1,17 @@
 async function toBase64DataURI(url) {
+  if (!url) return '';
   try {
     const res = await fetch(url);
-    const buffer = await res.arrayBuffer();
+    const arrayBuffer = await res.arrayBuffer();
+    const b64 = Buffer.from(arrayBuffer).toString('base64');
     const mime = res.headers.get('content-type') || 'image/jpeg';
-    const b64 = Buffer.from(buffer).toString('base64');
     return `data:${mime};base64,${b64}`;
-  } catch {
+  } catch (e) {
+    console.error("Image fetch failed", e);
     return ''; 
   }
 }
+
 
 export default async function handler(req, res) {
   const username = "JayJohn21";
@@ -38,10 +41,10 @@ export default async function handler(req, res) {
     const json = await response.json();
     const entries = json.data.MediaListCollection.lists[0].entries.slice(0, 2);
 
-    const anime1 = entries[0]?.media || { title: { romaji: "N/A" }, coverImage: { extraLarge: "" } };
-    const anime2 = entries[1]?.media || { title: { romaji: "N/A" }, coverImage: { extraLarge: "" } };
+    const allEntries = json.data.MediaListCollection.lists.flatMap(list => list.entries);
+    const entries = allEntries.slice(0, 2);
 
-    // ✅ Key fix: convert remote URLs → base64 data URIs
+
     const [img1, img2] = await Promise.all([
       toBase64DataURI(anime1.coverImage.extraLarge),
       toBase64DataURI(anime2.coverImage.extraLarge),
