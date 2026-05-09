@@ -1,8 +1,6 @@
 const fetch = require('node-fetch');
 
 export default async function handler(req, res) {
-  // 1. Fetch data from WakaTime API
-  // You MUST set WAKATIME_API_KEY in your Vercel Environment Variables
   const SECRETS = Buffer.from(process.env.WAKATIME_API_KEY).toString('base64');
   
   try {
@@ -10,14 +8,10 @@ export default async function handler(req, res) {
       headers: { Authorization: `Basic ${SECRETS}` }
     });
     const { data } = await response.json();
-
-    // 2. Extract the metrics you requested
     const dailyAvg = data.human_readable_daily_average || "0h 0m";
     const editors = data.editors.slice(0, 2).map(e => e.name).join(', ');
     const os = data.operating_systems.slice(0, 2).map(o => o.name).join(', ');
     const categories = data.categories.slice(0, 3).map(c => c.name).join(', ');
-
-    // 3. Generate the SVG (System Theme)
     const svg = `
     <svg width="400" height="150" viewBox="0 0 400 150" fill="none" xmlns="http://www.w3.org/2000/svg">
       <style>
