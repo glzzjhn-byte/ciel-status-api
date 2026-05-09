@@ -1,15 +1,18 @@
 export const config = {
   runtime: 'edge', 
 };
-
 async function toBase64(url) {
   if (!url) return '';
   try {
     const res = await fetch(url);
-    const blob = await res.arrayBuffer();
-    const base64 = btoa(
-      new Uint8Array(blob).reduce((data, byte) => data + String.fromCharCode(byte), '')
-    );
+    const buffer = await res.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    
+    const base64 = btoa(binary);
     const mime = res.headers.get('content-type') || 'image/jpeg';
     return `data:${mime};base64,${base64}`;
   } catch (e) {
@@ -19,6 +22,7 @@ async function toBase64(url) {
 
 export default async function handler(req) {
   const username = "JayJohn21";
+  
   const query = `
     query ($name: String) {
       MediaListCollection(userName: $name, type: ANIME, status_in: [CURRENT, COMPLETED]) {
@@ -26,8 +30,9 @@ export default async function handler(req) {
           entries {
             media {
               title { romaji }
-              coverImage { large } # 'large' is smaller than 'extraLarge', faster to load
+              coverImage { large } 
             }
+            status
           }
         }
       }
@@ -42,23 +47,64 @@ export default async function handler(req) {
     });
     
     const json = await response.json();
-    const entries = json.data.MediaListCollection.lists.flatMap(l => l.entries).slice(0, 2);
+    const lists = json.data?.MediaListCollection?.lists || [];
+    const entries = lists.flatMap(l => l.entries).filter(Boolean).slice(0, 2);
 
     const [img1, img2] = await Promise.all([
       toBase64(entries[0]?.media.coverImage.large),
       toBase64(entries[1]?.media.coverImage.large),
     ]);
 
-    const title1 = entries[0]?.media.title.romaji || "N/A";
-    const title2 = entries[1]?.media.title.romaji || "N/A";
+    const title1 = entries[0]?.media.title.romaji || "Classroom of the Elite";
+    const title2 = entries[1]?.media.title.romaji || "Tensei Shitara Slime";
+    
+    const status1 = entries[0]?.status === "COMPLETED" ? "COMPLETED" : "WATCHING";
+    const status2 = entries[1]?.status === "COMPLETED" ? "COMPLETED" : "WATCHING";
 
     const svg = `
-    <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="200" rx="10" fill="#141519"/>
-      <image href="${img1}" x="10" y="10" width="80" height="110" preserveAspectRatio="xMidYMid slice" />
-      <text x="10" y="135" font-family="Arial" font-size="10" fill="#fff">${title1.substring(0, 15)}</text>
-      <image href="${img2}" x="110" y="10" width="80" height="110" preserveAspectRatio="xMidYMid slice" />
-      <text x="110" y="135" font-family="Arial" font-size="10" fill="#fff">${title2.substring(0, 15)}</text>
+    <svg width="800" height="230" viewBox="0 0 800 230" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <clipPath id="clip1"><rect x="16" y="60" width="100" height="140" rx="6"/></clipPath>
+        <clipPath id="clip2"><rect x="128" y="60" width="100" height="140" rx="6"/></clipPath>
+      </defs>
+      <rect width="800" height="230" rx="10" fill="#141519"/>
+      <rect width="800" height="4" rx="2" fill="#F47521"/>
+      <rect width="800" height="46" y="4" fill="#141519"/>
+      
+      <text x="20" y="33" font-family="Arial,sans-serif" font-weight="800" font-size="15" fill="#F47521" letter-spacing="-0.3">CRUNCHYROLL</text>
+      <text x="145" y="33" font-family="Arial,sans-serif" font-weight="400" font-size="12" fill="#aaaaaa">— My Watchlist</text>
+      <text x="20" y="55" font-family="Arial,sans-serif" font-weight="700" font-size="11" fill="#cccccc" letter-spacing="1">🎌 TOP ANIME I WATCH</text>
+
+      <!-- CARD 1 -->
+      <g>
+        <rect x="16" y="60" width="100" height="140" rx="6" fill="#0e2744"/>
+        <image href="${img1}" x="16" y="60" width="100" height="140" preserveAspectRatio="xMidYMid slice" clip-path="url(#clip1)"/>
+        <rect x="16" y="140" width="100" height="60" rx="0" fill="#0a1c36" opacity="0.85"/>
+        <text x="66" y="163" font-family="Arial,sans-serif" font-weight="700" font-size="8.5" fill="#ffffff" text-anchor="middle">${title1.substring(0, 18)}</text>
+        <rect x="22" y="175" width="47" height="12" rx="3" fill="#2ecc71"/>
+        <text x="45" y="184" font-family="Arial,sans-serif" font-weight="700" font-size="7.5" fill="#ffffff" text-anchor="middle">${status1}</text>
+        <rect x="16" y="60" width="28" height="14" rx="3" fill="#F47521"/>
+        <text x="30" y="70" font-family="Arial,sans-serif" font-weight="700" font-size="7.5" fill="#ffffff" text-anchor="middle">#1</text>
+      </g>
+
+      <!-- CARD 2 -->
+      <g>
+        <rect x="128" y="60" width="100" height="140" rx="6" fill="#0a2015"/>
+        <image href="${img2}" x="128" y="60" width="100" height="140" preserveAspectRatio="xMidYMid slice" clip-path="url(#clip2)"/>
+        <rect x="128" y="140" width="100" height="60" rx="0" fill="#051a0d" opacity="0.85"/>
+        <text x="178" y="163" font-family="Arial,sans-serif" font-weight="700" font-size="8.5" fill="#ffffff" text-anchor="middle">${title2.substring(0, 18)}</text>
+        <rect x="134" y="175" width="47" height="12" rx="3" fill="#2ecc71"/>
+        <text x="157" y="184" font-family="Arial,sans-serif" font-weight="700" font-size="7.5" fill="#ffffff" text-anchor="middle">${status2}</text>
+        <rect x="128" y="60" width="28" height="14" rx="3" fill="#F47521"/>
+        <text x="142" y="70" font-family="Arial,sans-serif" font-weight="700" font-size="7.5" fill="#ffffff" text-anchor="middle">#2</text>
+      </g>
+
+      <!-- Footer bar -->
+      <rect y="208" width="800" height="22" rx="0" fill="#0e0f13"/>
+      <rect y="206" width="800" height="1" fill="#2a2a35"/>
+      <text x="20" y="223" font-family="Arial,sans-serif" font-size="9" fill="#888888">🎌 Watching via AniList Sync</text>
+      <rect x="700" y="211" width="82" height="15" rx="7" fill="#F47521"/>
+      <text x="741" y="222" font-family="Arial,sans-serif" font-weight="800" font-size="8" fill="#ffffff" text-anchor="middle">CRUNCHYROLL</text>
     </svg>`;
 
     return new Response(svg, {
@@ -68,8 +114,9 @@ export default async function handler(req) {
       },
     });
   } catch (err) {
-    return new Response('<svg xmlns="http://www.w3.org/2000/svg"><text y="20" fill="red">Error</text></svg>', {
-      headers: { 'Content-Type': 'image/svg+xml' },
-    });
+    return new Response(
+      '<svg width="800" height="230" xmlns="http://www.w3.org/2000/svg"><rect width="800" height="230" fill="#141519"/><text x="20" y="30" fill="#F47521" font-family="Arial">System Notice: Anime Status Syncing...</text></svg>', 
+      { headers: { 'Content-Type': 'image/svg+xml' } }
+    );
   }
 }
