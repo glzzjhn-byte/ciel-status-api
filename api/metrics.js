@@ -10,43 +10,61 @@ export default async function handler(req, res) {
       headers: { 'Authorization': `Basic ${SECRETS}` }
     });
 
-    const result = await response.json();
-    if (!result.data) return res.status(500).json({ error: "No data." });
+    const { data } = await response.json();
+    if (!data) return res.status(500).json({ error: "No data." });
 
-    const { data } = result;
+    const barWidth = 160;
+    const itemHeight = 35; 
+    const sectionPadding = 50; 
 
-    const getTop = (arr) => arr?.length ? arr[0] : { name: "N/A", percent: 0 };
-    
-    const topEditor = getTop(data.editors);
-    const topOS = getTop(data.operating_systems);
-    const topLang = getTop(data.languages);
+    const renderSection = (items, title, startY, color) => {
+      if (!items || items.length === 0) return { html: "", nextY: startY };
+      
+      let html = `<text x="20" y="${startY}" class="header">${title}</text>`;
+      items.forEach((item, index) => {
+        const y = startY + 25 + (index * itemHeight);
+        const calcWidth = (item.percent / 100) * barWidth;
+        
+        html += `
+          <text x="20" y="${y}" class="label">${item.name}</text>
+          <text x="200" y="${y}" class="stat">${item.percent}%</text>
+          <rect x="20" y="${y + 8}" width="${barWidth}" height="6" rx="3" fill="#30363d"/>
+          <rect x="20" y="${y + 8}" width="${calcWidth}" height="6" rx="3" fill="${color}">
+            <animate attributeName="width" from="0" to="${calcWidth}" dur="0.8s" fill="freeze" />
+          </rect>
+        `;
+      });
+      
+      return { 
+        html, 
+        nextY: startY + 40 + (items.length * itemHeight) 
+      };
+    };
 
-    const barWidth = 180; 
+    // Process all categories
+    const catData = renderSection(data.categories, "■ CATEGORIES", 60, "#FF79C6");
+    const langData = renderSection(data.languages, "■ LANGUAGES", catData.nextY, "#F1FA8C");
+    const editData = renderSection(data.editors, "■ EDITORS", langData.nextY, "#8BE9FD");
+    const osData = renderSection(data.operating_systems, "■ OPERATING SYSTEMS", editData.nextY, "#BD93F9");
 
-    const renderBar = (y, label, name, percent, color) => `
-      <text x="20" y="${y}" class="label">${label}:</text>
-      <text x="110" y="${y}" class="stat">${name} (${percent}%)</text>
-      <rect x="20" y="${y + 10}" width="${barWidth}" height="8" rx="4" fill="#30363d"/>
-      <rect x="20" y="${y + 10}" width="${(percent / 100) * barWidth}" height="8" rx="4" fill="${color}">
-        <animate attributeName="width" from="0" to="${(percent / 100) * barWidth}" dur="0.8s" fill="freeze" />
-      </rect>
-    `;
+    const totalHeight = osData.nextY + 20;
 
     const svg = `
-    <svg width="420" height="200" viewBox="0 0 420 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="350" height="${totalHeight}" viewBox="0 0 350 ${totalHeight}" fill="none" xmlns="http://www.w3.org/2000/svg">
       <style>
-        .header { font: 700 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: #79d4ff; }
-        .stat { font: 400 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: #ffffff; }
-        .label { font: 600 13px 'Segoe UI', Ubuntu, Sans-Serif; fill: #b3b3b3; }
+        .header { font: 700 14px 'Courier New', monospace; fill: #ffb86c; }
+        .stat { font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #f8f8f2; }
+        .label { font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #6272a4; }
       </style>
-      <rect width="420" height="200" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="2"/>
+      <rect width="350" height="${totalHeight}" rx="10" fill="#282a36" stroke="#44475a" stroke-width="2"/>
       
-      <text x="20" y="35" class="header">System Telemetry Log [v2.0]</text>
-      <text x="300" y="35" class="label" font-size="10">AVG: ${data.human_readable_daily_average}</text>
+      <text x="20" y="30" class="header" fill="#50fa7b">📜Waka Time Stats</text>
+      <text x="220" y="30" class="label" font-size="10">AVG: ${data.human_readable_daily_average}</text>
 
-      ${renderBar(65, "Editor", topEditor.name, topEditor.percent, "#47A1FF")}
-      ${renderBar(110, "OS", topOS.name, topOS.percent, "#76E150")}
-      ${renderBar(155, "Language", topLang.name, topLang.percent, "#F9D71C")}
+      ${catData.html}
+      ${langData.html}
+      ${editData.html}
+      ${osData.html}
     </svg>
     `;
 
