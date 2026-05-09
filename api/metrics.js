@@ -1,17 +1,32 @@
-const fetch = require('node-fetch');
-
 export default async function handler(req, res) {
+  if (!process.env.WAKATIME_API_KEY) {
+    return res.status(500).json({ error: "API Key missing in environment variables." });
+  }
   const SECRETS = Buffer.from(process.env.WAKATIME_API_KEY).toString('base64');
   
   try {
     const response = await fetch('https://wakatime.com/api/v1/users/current/stats/last_7_days', {
-      headers: { Authorization: `Basic ${SECRETS}` }
+      headers: { 
+        'Authorization': `Basic ${SECRETS}`,
+        'Content-Type': 'application/json'
+      }
     });
-    const { data } = await response.json();
+
+    const result = await response.json();
+
+    if (!result.data) {
+      console.error("WakaTime API Error:", result);
+      return res.status(500).json({ error: "No data returned from WakaTime." });
+    }
+
+    const { data } = result;
+
     const dailyAvg = data.human_readable_daily_average || "0h 0m";
-    const editors = data.editors.slice(0, 2).map(e => e.name).join(', ');
-    const os = data.operating_systems.slice(0, 2).map(o => o.name).join(', ');
-    const categories = data.categories.slice(0, 3).map(c => c.name).join(', ');
+    const editors = data.editors?.length ? data.editors.slice(0, 2).map(e => e.name).join(', ') : "N/A";
+    const os = data.operating_systems?.length ? data.operating_systems.slice(0, 2).map(o => o.name).join(', ') : "N/A";
+    const categories = data.categories?.length ? data.categories.slice(0, 3).map(c => c.name).join(', ') : "N/A";
+
+
     const svg = `
     <svg width="400" height="150" viewBox="0 0 400 150" fill="none" xmlns="http://www.w3.org/2000/svg">
       <style>
@@ -41,6 +56,7 @@ export default async function handler(req, res) {
     return res.status(200).send(svg);
 
   } catch (error) {
-    return res.status(500).json({ error: "Failed to fetch telemetry data" });
+    console.error("Serverless Function Crash:", error);
+    return res.status(500).json({ error: "Internal Server Error", details: error.message });
   }
 }
