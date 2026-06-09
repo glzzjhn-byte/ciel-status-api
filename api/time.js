@@ -1,5 +1,7 @@
 // File: api/time.js
 
+//File destination
+let destinationFile = "glzzjhn-byte/Location"
 export default function handler(req, res) {
     const { loc } = req.query;
 
@@ -28,11 +30,13 @@ export default function handler(req, res) {
         borderColor = "#FFCA28";
     }
 
-    const svg = `<svg width="300" height="40" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" rx="4" fill="#0d1117" stroke="${borderColor}" stroke-width="2"/>
-        <text x="50%" y="50%" font-family="monospace" font-size="14" fill="${textColor}" dominant-baseline="middle" text-anchor="middle" font-weight="bold" letter-spacing="1">
-            ${text}
-        </text>
+      const svg = `<svg width="300" height="40" xmlns="http://www.w3.org/2000/svg">
+        <a href="https://gist.github.com/${destinationFile}" target="_blank">
+            <rect width="100%" height="100%" rx="4" fill="#0d1117" stroke="${borderColor}" stroke-width="2"/>
+            <text x="50%" y="50%" font-family="monospace" font-size="14" fill="${textColor}" dominant-baseline="middle" text-anchor="middle" font-weight="bold" letter-spacing="1">
+                ${text}
+            </text>
+        </a>
     </svg>`;
 
     res.setHeader('Content-Type', 'image/svg+xml');
