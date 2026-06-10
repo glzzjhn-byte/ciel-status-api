@@ -3,7 +3,7 @@
 export default async function handler(req, res) {
     const gistUrl = "https://gist.githubusercontent.com/glzzjhn-byte/e984e5ecad79ae1d389924d8a9b19851/raw/status";
     
-    let text = "Status: UNAVAILABLE 🚫";
+    let text = "Status: NOT AVAILABLE FOR HIRE 🚫";
     let textColor = "#A9A9A9"; 
     let borderColor = "#696969";
 
