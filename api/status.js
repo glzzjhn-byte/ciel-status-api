@@ -21,7 +21,7 @@ export default async function handler(req, res) {
             textColor = "#D14836";
             borderColor = "#8B0000";
         } else if (command === '') {
-            text = "Status: UNAVAILABLE 🚫";
+            text = "Status: NOT AVAILABLE FOR HIRE 🚫";
             textColor = "#A9A9A9";
             borderColor = "#696969";
         } else {
